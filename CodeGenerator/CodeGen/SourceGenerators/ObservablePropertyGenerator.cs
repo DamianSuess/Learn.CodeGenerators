@@ -1,18 +1,17 @@
-using System;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Reflection;
 using CodeGen.Extensions;
+using CodeGen.Helpers;
 using CodeGen.Models;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
+using PropertyInfo = CodeGen.Models.PropertyInfo;
+
 namespace CodeGen.SourceGenerators;
 
-/// <summary>
-/// A source generator for the <c>ObservablePropertyAttribute</c> type.
-/// </summary>
-////[Generator(LanguageNames.CSharp)]
+/// <summary>A source generator for the <c>ObservablePropertyAttribute</c> type.</summary>
+[Generator(LanguageNames.CSharp)]
 public sealed partial class ObservablePropertyGenerator : IIncrementalGenerator
 {
   /// <inheritdoc/>

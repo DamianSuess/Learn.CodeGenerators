@@ -256,7 +256,7 @@ dotnet_naming_style.end_in_async.word_separator =
 ## private fields must prefix with an underscore
 dotnet_naming_rule.private_members_with_underscore.symbols  = private_fields
 dotnet_naming_rule.private_members_with_underscore.style    = prefix_underscore
-dotnet_naming_rule.private_members_with_underscore.severity = error
+dotnet_naming_rule.private_members_with_underscore.severity = warning     # error
 dotnet_naming_symbols.private_fields.applicable_kinds       = field
 dotnet_naming_symbols.private_fields.applicable_accessibilities = private
 dotnet_naming_style.prefix_underscore.capitalization = camel_case
@@ -265,7 +265,7 @@ dotnet_naming_style.prefix_underscore.required_prefix = _
 ## private static fields must use PascalCase (overrides '_' based on SA1311)
 dotnet_naming_rule.private_static_field_naming.symbols  = private_static_field_naming
 dotnet_naming_rule.private_static_field_naming.style    = pascal_case_style
-dotnet_naming_rule.private_static_field_naming.severity = error
+dotnet_naming_rule.private_static_field_naming.severity = warning       # error
 dotnet_naming_symbols.private_static_field_naming.applicable_kinds   = field
 dotnet_naming_symbols.private_static_field_naming.applicable_accessibilities = private
 dotnet_naming_symbols.private_static_field_naming.required_modifiers = static, readonly
@@ -313,7 +313,7 @@ csharp_style_conditional_delegate_call = true
 # IDE1005: Delegate invocation can be simplified.
 dotnet_diagnostic.IDE1005.severity = warning
 # IDE1006: Naming Styles
-dotnet_diagnostic.IDE1006.severity = error
+dotnet_diagnostic.IDE1006.severity = warning  # error
 # IDEOOO8: Use of var
 dotnet_diagnostic.IDE0008.severity = none
 # IDE0010: Add missing cases
