@@ -1,3 +1,5 @@
+// #define DEBUG_GENERATOR
+
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -5,7 +7,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 
-namespace MvvmApp.Generators;
+namespace MvvmApp.GeneratorsOld;
 
 /// <summary>Notifiable property source code generator.</summary>
 /// <remarks>
@@ -40,7 +42,10 @@ namespace {PrismAvaloniaToolkit}
 
   public void Execute(GeneratorExecutionContext context)
   {
-    ////("Prism.Avalonia.Toolkit.NotifyFieldAttribute"));
+#if DEBUG_GENERATOR
+    while (!System.Diagnostics.Debugger.IsAttached)
+      System.Threading.Thread.Sleep(500);
+#endif
 
     // Retrieve the populated receiver
     if (!(context.SyntaxContextReceiver is SyntaxReceiver receiver))
@@ -84,13 +89,14 @@ namespace {PrismAvaloniaToolkit}
     StringBuilder src = new($@"
 namespace {srcNamespace}
 {{
-  public partial class {classSymbol.Name} : {notify.ToDisplayString()}
+  //// public partial class {classSymbol.Name} : {notify.ToDisplayString()}
+  public partial class {classSymbol.Name} : Prism.Mvvm.BindableBase
   {{
 ");
 
     // Add the event INotifyPropertyChanged  if it doesnt already
-    if (!classSymbol.Interfaces.Contains(notify, SymbolEqualityComparer.Default))
-      src.Append("    public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;");
+    ////if (!classSymbol.Interfaces.Contains(notify, SymbolEqualityComparer.Default))
+    ////  src.Append("    public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;");
 
     foreach (IFieldSymbol fieldSymbol in fields)
       ProcessField(src, fieldSymbol, attr);
@@ -130,8 +136,9 @@ namespace {srcNamespace}
       get => this.{fieldName};
       set
       {{
-          this.{fieldName} = value;
-          this.PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(nameof({propertyName})));
+          SetProperty(ref this.{fieldName}, value);
+          //this.{fieldName} = value;
+          // this.PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(nameof({propertyName})));
       }}
     }}
 ");
