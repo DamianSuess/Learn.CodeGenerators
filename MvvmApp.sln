@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.12.35527.113
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MvvmApp", "MvvmGenerator\MvvmApp.csproj", "{2E2E2A26-A0FE-421D-A7C7-88D418933DD4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MvvmApp", "MvvmApp\MvvmApp.csproj", "{2E2E2A26-A0FE-421D-A7C7-88D418933DD4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MvvmApp.Generators", "MvvmApp.Generators\MvvmApp.Generators.csproj", "{E0CA1F83-B6DD-4543-9302-368049CBC60E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{2E2E2A26-A0FE-421D-A7C7-88D418933DD4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2E2E2A26-A0FE-421D-A7C7-88D418933DD4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2E2E2A26-A0FE-421D-A7C7-88D418933DD4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E0CA1F83-B6DD-4543-9302-368049CBC60E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E0CA1F83-B6DD-4543-9302-368049CBC60E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E0CA1F83-B6DD-4543-9302-368049CBC60E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E0CA1F83-B6DD-4543-9302-368049CBC60E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

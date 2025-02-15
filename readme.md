@@ -8,4 +8,5 @@ How to create custom attributes and code generators
 
 ### References
 
-Sections of this is based on CommunityToolkit.Mvvm `ObservableProperty`.
+* [Source Generators Samples](https://github.com/dotnet/roslyn-sdk/blob/main/samples/CSharp/SourceGenerators/SourceGeneratorSamples/AutoNotifyGenerator.cs#L50)
+* Sections of this is based on CommunityToolkit.Mvvm `ObservableProperty`.

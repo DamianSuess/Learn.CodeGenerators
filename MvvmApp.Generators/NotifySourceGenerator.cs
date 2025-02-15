@@ -1,0 +1,183 @@
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Text;
+
+namespace MvvmApp.Generators;
+
+/// <summary>Notifiable property source code generator.</summary>
+/// <remarks>
+///   References:
+///     - https://github.com/dotnet/roslyn-sdk/blob/main/samples/CSharp/SourceGenerators/SourceGeneratorSamples/AutoNotifyGenerator.cs
+/// </remarks>
+public class NotifySourceGenerator : ISourceGenerator
+{
+  private const string NotifyFieldAttribute = "NotifyFieldAttribute";
+
+  private const string NotifyFieldAttributeText = $@"
+using System;
+namespace Prism.Avalonia.Toolkit
+{{
+    [AttributeUsage(AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
+    [System.Diagnostics.Conditional(""NotifyFieldGenerator_DEBUG"")]
+    sealed class {NotifyFieldAttribute} : Attribute
+    {{
+        public {NotifyFieldAttribute}()
+        {{
+        }}
+
+        public string PropertyName {{ get; set; }}
+    }}
+}}
+";
+
+  private static readonly string NotifyFieldNamespace = $"Prism.Avalonia.Toolkit.{NotifyFieldAttribute}";
+  private static readonly string NotifyPropertyChanged = "System.ComponentModel.INotifyPropertyChanged";
+
+  public void Execute(GeneratorExecutionContext context)
+  {
+    ////("Prism.Avalonia.Toolkit.NotifyFieldAttribute"));
+
+    // Retrieve the populated receiver
+    if (!(context.SyntaxContextReceiver is SyntaxReceiver receiver))
+      return;
+
+    INamedTypeSymbol attributeSymbol = context.Compilation.GetTypeByMetadataName(NotifyFieldNamespace);
+    INamedTypeSymbol notifySymbol = context.Compilation.GetTypeByMetadataName(NotifyPropertyChanged);
+
+    // Group the fields by class and generate the source
+    foreach (
+      IGrouping<INamedTypeSymbol, IFieldSymbol> group in
+      receiver.Fields.GroupBy<IFieldSymbol, INamedTypeSymbol>(f => f.ContainingType, SymbolEqualityComparer.Default))
+    {
+      string srcClass = ProcessClass(group.Key, group.ToList(), attributeSymbol, notifySymbol, context);
+
+      if (srcClass is null)
+        continue;
+
+      context.AddSource($"{group.Key.Name}_notifyable.g.cs", SourceText.From(srcClass, Encoding.UTF8));
+    }
+  }
+
+  public void Initialize(GeneratorInitializationContext context)
+  {
+    // Register attribute source
+    context.RegisterForPostInitialization((i) => i.AddSource($"{NotifyFieldAttribute}.g.cs", NotifyFieldAttributeText));
+
+    // Register syntax receiver that will be created for each generation pass
+    context.RegisterForSyntaxNotifications(() => new SyntaxReceiver());
+  }
+
+  private string? ProcessClass(INamedTypeSymbol classSymbol, List<IFieldSymbol> fields, ISymbol attr, ISymbol notify, GeneratorExecutionContext context)
+  {
+    // Must be top-level
+    if (!classSymbol.ContainingSymbol.Equals(classSymbol.ContainingNamespace, SymbolEqualityComparer.Default))
+      return null;
+
+    string srcNamespace = classSymbol.ContainingNamespace.ToDisplayString();
+
+    // TODO: Use Prism's BindableBase
+    StringBuilder src = new($@"
+namespace {srcNamespace}
+{{
+  public partial class {classSymbol.Name} : {notify.ToDisplayString()}
+  {{
+");
+
+    if (!classSymbol.Interfaces.Contains(notify, SymbolEqualityComparer.Default))
+      src.Append("");
+
+    foreach (IFieldSymbol fieldSymbol in fields)
+      ProcessField(src, fieldSymbol, attr);
+
+    src.Append("  }\n}");
+
+    return src.ToString();
+  }
+
+  private void ProcessField(StringBuilder source, IFieldSymbol fieldSymbol, ISymbol attributeSymbol)
+  {
+    const string PropertyName = "PropertyName";
+
+    // Get name and type of the field
+    string fieldName = fieldSymbol.Name;
+    ITypeSymbol fieldType = fieldSymbol.Type;
+
+    // Get Notifiable attribute from the field and associated data
+    AttributeData attributeData = fieldSymbol
+      .GetAttributes()
+      .Single(ad => ad.AttributeClass.Equals(attributeSymbol, SymbolEqualityComparer.Default));
+
+    TypedConstant overridenNameOpt = attributeData.NamedArguments.SingleOrDefault(kvp => kvp.Key == PropertyName).Value;
+
+    // Report diagnostic issues if we can't process the field.
+    string propertyName = ExtractName(fieldName, overridenNameOpt);
+    if (propertyName.Length == 0 || propertyName == fieldName)
+    {
+      return;
+    }
+
+    // TODO: Append to source
+
+    source.Append($@"
+public {fieldType} {propertyName}
+{{
+  get => this.{fieldName};
+  set
+  {{
+      this.{fieldName} = value;
+      this.PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(nameof({propertyName})));
+  }}
+}}
+");
+
+    // Extract the new Property's name from the field
+    string ExtractName(string fieldName, TypedConstant overridenNameOpt)
+    {
+      if (!overridenNameOpt.IsNull)
+      {
+        return overridenNameOpt.Value.ToString();
+      }
+
+      // Remove leading underscore
+      fieldName = fieldName.TrimStart('_');
+      if (fieldName.Length == 0)
+        return string.Empty;
+
+      if (fieldName.Length == 1)
+        return fieldName.ToUpper();
+
+      return fieldName.Substring(0, 1).ToUpper() + fieldName.Substring(1);
+    }
+  }
+
+  private class SyntaxReceiver : ISyntaxContextReceiver
+  {
+    public List<IFieldSymbol> Fields { get; } = [];
+
+    /// <summary>Called for every syntax node in the compilation, we can inspect the nodes and save any information useful for generation.</summary>
+    /// <param name="context"><see cref="GeneratorSyntaxContext"/>.</param>
+    public void OnVisitSyntaxNode(GeneratorSyntaxContext context)
+    {
+      // Any field with at least one attribute is checked for property generation
+      if (context.Node is FieldDeclarationSyntax syntax &&
+          syntax.AttributeLists.Count > 0)
+      {
+        foreach (VariableDeclaratorSyntax variable in syntax.Declaration.Variables)
+        {
+          IFieldSymbol? symbol = context.SemanticModel.GetDeclaredSymbol(variable) as IFieldSymbol;
+
+          if (symbol is null)
+            continue;
+
+          if (symbol.GetAttributes().Any(attr => attr.AttributeClass.ToDisplayString() == NotifyFieldNamespace))
+          {
+            Fields.Add(symbol);
+          }
+        }
+      }
+    }
+  }
+}

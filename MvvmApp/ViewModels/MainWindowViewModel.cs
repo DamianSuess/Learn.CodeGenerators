@@ -1,7 +1,16 @@
+using MvvmApp.Generators;
+using Prism.Avalonia.Toolkit;
+
 namespace MvvmApp.ViewModels;
 
 public class MainWindowViewModel : ViewModelBase
 {
+  [NotifyField]
+  private string _firstName;
+
+  [NotifyField]
+  private string _lastName;
+
   public MainWindowViewModel()
   {
     Title = "Welcome to Prism.Avalonia!";
