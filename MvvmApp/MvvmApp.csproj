@@ -28,7 +28,7 @@
 
   <ItemGroup>
     <!--<ProjectReference Include="..\MvvmApp.Generators\MvvmApp.Generators.csproj" />-->
-    <Analyzer Include="..\MvvmApp.GeneratorsOld\bin\Debug\net8.0\MvvmApp.GeneratorsOld.dll"/>
+    <Analyzer Include="..\MvvmApp.GeneratorsOld\bin\Debug\netstandard2.0\MvvmApp.GeneratorsOld.dll"/>
     <!--
     <ProjectReference Include="..\MvvmApp.Generators\MvvmApp.Generators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     <ProjectReference Include="..\MvvmApp.GeneratorsOld\MvvmApp.GeneratorsOld.csproj"  OutputItemType="Analyzer" ReferenceOutputAssembly="false" />

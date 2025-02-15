@@ -1,4 +1,5 @@
 using Prism.Avalonia.Toolkit;
+using Prism.Commands;
 
 namespace MvvmApp.ViewModels;
 
@@ -7,18 +8,29 @@ public partial class MainWindowViewModel //: ViewModelBase
   [NotifyField]
   private string _firstName;
 
+  private string _fullName;
+
+  ////[Notifies(nameof(FullName))]
   [NotifyField]
   private string _lastName;
 
-  private string _title = string.Empty;
-
-  /// <summary>Gets or sets the title of the view.</summary>
-  public string Title { get => _title; set => SetProperty(ref _title, value); }
+  [NotifyField]
+  private string _title;
 
   public MainWindowViewModel()
   {
     Title = "Welcome to Prism.Avalonia!";
   }
+
+  public string FullName => $"{FirstName} {LastName}";
+
+  public DelegateCommand CmdPopulate => new(() =>
+  {
+    FirstName = "John-Jacob";
+    LastName = "Jingleheimerschmidt";
+
+    RaisePropertyChanged(nameof(FullName));
+  });
 
   // Can't find this attribute due to library's access
   ////[Notifiable]

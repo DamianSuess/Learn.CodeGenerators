@@ -128,8 +128,6 @@ namespace {srcNamespace}
       return;
     }
 
-    // TODO: Append to source
-
     source.Append($@"
     public {fieldType} {propertyName}
     {{

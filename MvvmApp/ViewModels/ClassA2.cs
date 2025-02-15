@@ -8,6 +8,7 @@ using Prism.Mvvm;
 namespace MvvmApp.ViewModels;
 
 // Tests that two partial classes can double-inherit
+// But not different classes such as, ViewModelBase & BindableBase
 public partial class ClassA : BindableBase
 {
 }
