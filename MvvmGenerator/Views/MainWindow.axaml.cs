@@ -1,6 +1,6 @@
 using Avalonia.Controls;
 
-namespace MvvmGenerator.Views;
+namespace MvvmApp.Views;
 
 /// <summary>Main window view.</summary>
 public partial class MainWindow : Window

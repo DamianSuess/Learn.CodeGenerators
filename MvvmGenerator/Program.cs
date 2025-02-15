@@ -1,7 +1,7 @@
 using System;
 using Avalonia;
 
-namespace MvvmGenerator;
+namespace MvvmApp;
 
 internal sealed class Program
 {

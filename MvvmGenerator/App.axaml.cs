@@ -1,10 +1,10 @@
 using Avalonia;
 using Avalonia.Markup.Xaml;
-using MvvmGenerator.Views;
+using MvvmApp.Views;
 using Prism.DryIoc;
 using Prism.Ioc;
 
-namespace MvvmGenerator;
+namespace MvvmApp;
 
 public partial class App : PrismApplication
 {

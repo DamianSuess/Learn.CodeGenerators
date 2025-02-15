@@ -1,4 +1,4 @@
-namespace MvvmGenerator.ViewModels;
+namespace MvvmApp.ViewModels;
 
 public class MainWindowViewModel : ViewModelBase
 {
