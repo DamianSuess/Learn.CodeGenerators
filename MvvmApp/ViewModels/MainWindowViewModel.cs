@@ -1,9 +1,8 @@
-using MvvmApp.Generators;
 using Prism.Avalonia.Toolkit;
 
 namespace MvvmApp.ViewModels;
 
-public class MainWindowViewModel : ViewModelBase
+public partial class MainWindowViewModel : ViewModelBase
 {
   [NotifyField]
   private string _firstName;
@@ -15,6 +14,10 @@ public class MainWindowViewModel : ViewModelBase
   {
     Title = "Welcome to Prism.Avalonia!";
   }
+
+  // Can't find this attribute due to library's access
+  ////[Notifiable]
+  ////public string SomeProperty { get; set; }
 
 #pragma warning disable CA1822 // Mark members as static
   public string Greeting => "Hello from, Prism.Avalonia!";

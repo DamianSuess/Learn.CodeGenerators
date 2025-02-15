@@ -12,13 +12,14 @@ namespace MvvmApp.Generators;
 ///   References:
 ///     - https://github.com/dotnet/roslyn-sdk/blob/main/samples/CSharp/SourceGenerators/SourceGeneratorSamples/AutoNotifyGenerator.cs
 /// </remarks>
+[Generator(LanguageNames.CSharp)]
 public class NotifySourceGenerator : ISourceGenerator
 {
   private const string NotifyFieldAttribute = "NotifyFieldAttribute";
 
-  private const string NotifyFieldAttributeText = $@"
+  private const string NotifyFieldAttributeClass = $@"
 using System;
-namespace Prism.Avalonia.Toolkit
+namespace {PrismAvaloniaToolkit}
 {{
     [AttributeUsage(AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
     [System.Diagnostics.Conditional(""NotifyFieldGenerator_DEBUG"")]
@@ -33,8 +34,9 @@ namespace Prism.Avalonia.Toolkit
 }}
 ";
 
-  private static readonly string NotifyFieldNamespace = $"Prism.Avalonia.Toolkit.{NotifyFieldAttribute}";
-  private static readonly string NotifyPropertyChanged = "System.ComponentModel.INotifyPropertyChanged";
+  private const string NotifyFieldNamespace = $"{PrismAvaloniaToolkit}.{NotifyFieldAttribute}";
+  private const string NotifyPropertyChanged = "System.ComponentModel.INotifyPropertyChanged";
+  private const string PrismAvaloniaToolkit = "Prism.Avalonia.Toolkit";
 
   public void Execute(GeneratorExecutionContext context)
   {
@@ -64,7 +66,7 @@ namespace Prism.Avalonia.Toolkit
   public void Initialize(GeneratorInitializationContext context)
   {
     // Register attribute source
-    context.RegisterForPostInitialization((i) => i.AddSource($"{NotifyFieldAttribute}.g.cs", NotifyFieldAttributeText));
+    context.RegisterForPostInitialization((i) => i.AddSource($"{NotifyFieldAttribute}.g.cs", NotifyFieldAttributeClass));
 
     // Register syntax receiver that will be created for each generation pass
     context.RegisterForSyntaxNotifications(() => new SyntaxReceiver());
@@ -86,8 +88,9 @@ namespace {srcNamespace}
   {{
 ");
 
+    // Add the event INotifyPropertyChanged  if it doesnt already
     if (!classSymbol.Interfaces.Contains(notify, SymbolEqualityComparer.Default))
-      src.Append("");
+      src.Append("    public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;");
 
     foreach (IFieldSymbol fieldSymbol in fields)
       ProcessField(src, fieldSymbol, attr);
@@ -122,15 +125,15 @@ namespace {srcNamespace}
     // TODO: Append to source
 
     source.Append($@"
-public {fieldType} {propertyName}
-{{
-  get => this.{fieldName};
-  set
-  {{
-      this.{fieldName} = value;
-      this.PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(nameof({propertyName})));
-  }}
-}}
+    public {fieldType} {propertyName}
+    {{
+      get => this.{fieldName};
+      set
+      {{
+          this.{fieldName} = value;
+          this.PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(nameof({propertyName})));
+      }}
+    }}
 ");
 
     // Extract the new Property's name from the field
