@@ -22,11 +22,7 @@ The examples provided use [Avalonia](https://avaloniaui.net/) and the [Prism.Ava
 
 _The examples provided are crude with the intention to quickly point out how to implement._
 
-### Incremental Generator Example
-
-_Currently under construction_
-
-### Source Generator Example
+Both Incremental and Source Generator projects perform the same actions. "Incremental" is recommended for .NET 6 and above.
 
 ### Attribute and Property Generator
 

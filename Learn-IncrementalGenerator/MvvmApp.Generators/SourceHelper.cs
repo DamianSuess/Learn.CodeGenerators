@@ -34,12 +34,24 @@ namespace {AttributeNamespace}
 
   public const string NotifyPropertyChangedNamespace = "System.ComponentModel.INotifyPropertyChanged";
 
+  /// <summary>Generate partial class for our notifiable properties.</summary>
+  /// <param name="context"></param>
+  /// <param name="classSymbol"></param>
+  /// <param name="fieldSymbols"></param>
+  /// <param name="attributeSymbol"></param>
+  /// <param name="notifySymbol"></param>
+  /// <returns></returns>
   ////private string GenerateClass(INamedTypeSymbol classSymbol, List<IFieldSymbol> fieldSymbols, INamedTypeSymbol? attributeSymbol, INamedTypeSymbol? notifySymbol)
-  public static string? GeneratePropertyClass(INamedTypeSymbol classSymbol, List<IFieldSymbol> fieldSymbols, ISymbol? attributeSymbol, ISymbol? notifySymbol)
+  public static string? GeneratePropertyClass(
+    SourceProductionContext context,
+    INamedTypeSymbol classSymbol,
+    List<IFieldSymbol> fieldSymbols,
+    ISymbol? attributeSymbol, ISymbol? notifySymbol)
   {
     if (!classSymbol.ContainingSymbol.Equals(classSymbol.ContainingNamespace, SymbolEqualityComparer.Default))
     {
       // TODO: Send Diagnostic that it must be top-level.
+      context.ReportDiagnostic(Diagnostic.Create(DiagnosticCodes.MustBeTopLevel, location: null));
       return null;
     }
 

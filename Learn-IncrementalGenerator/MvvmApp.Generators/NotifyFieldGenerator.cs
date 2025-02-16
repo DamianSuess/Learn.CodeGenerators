@@ -3,6 +3,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Xml.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
@@ -26,7 +27,7 @@ public class NotifyFieldGenerator : IIncrementalGenerator
 
     var fieldsProvider = context.SyntaxProvider
       .CreateSyntaxProvider(
-        predicate: static (node, _) => node is FieldDeclarationSyntax f && f.AttributeLists.Count > 0,
+        predicate: static (node, _) => IsFieldTargetForGenerator(node),
         transform: GetFieldsToTransform);
     ////.Where(static m => m is not null);
 
@@ -47,6 +48,13 @@ public class NotifyFieldGenerator : IIncrementalGenerator
     */
   }
 
+  /// <summary>Finds fields with (any) attribute(s).</summary>
+  /// <param name="node">Syntax Node.</param>
+  /// <returns>True when valid.</returns>
+  /// <remarks>Same as <code>node is FieldDeclarationSyntax f && f.AttributeLists.Count > 0;</code>.</remarks>
+  private static bool IsFieldTargetForGenerator(SyntaxNode node) =>
+    node is FieldDeclarationSyntax { AttributeLists.Count: > 0 };
+
   /// <summary>Execute the source generator.</summary>
   /// <param name="context"><see cref="SourceProductionContext"/>.</param>
   /// <param name="source">Source Tuple.</param>
@@ -60,10 +68,12 @@ public class NotifyFieldGenerator : IIncrementalGenerator
       source.symbols.GroupBy<IFieldSymbol, INamedTypeSymbol>(
         f => f.ContainingType, SymbolEqualityComparer.Default))
     {
-      string srcClass = SourceHelper.GeneratePropertyClass(group.Key, group.ToList(), attributeSymbol, notifySymbol);
+      string srcClass = SourceHelper.GeneratePropertyClass(context, group.Key, group.ToList(), attributeSymbol, notifySymbol);
 
       if (srcClass is not null)
         context.AddSource($"{group.Key.Name}_Notifyable.g.cs", SourceText.From(srcClass, Encoding.UTF8));
+      else
+        context.ReportDiagnostic(Diagnostic.Create(DiagnosticCodes.FailedToParseMessage, location: null));
     }
   }
 
