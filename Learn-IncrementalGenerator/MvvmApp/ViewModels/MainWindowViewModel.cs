@@ -19,15 +19,15 @@ public partial class MainWindowViewModel //: ViewModelBase
 
   public MainWindowViewModel()
   {
-    Title = "Welcome to Prism.Avalonia!";
+    Title = "Welcome to Prism.Avalonia.Toolkit - Code Generator!";
   }
 
   public string FullName => $"{FirstName} {LastName}";
 
   public DelegateCommand CmdPopulate => new(() =>
   {
-    FirstName = "John-Jacob";
-    LastName = "Jingleheimerschmidt";
+    FirstName = "Incremental";
+    LastName = "GeneratorSample";
 
     RaisePropertyChanged(nameof(FullName));
   });
