@@ -5,28 +5,35 @@
         xmlns:vm="using:MvvmApp.ViewModels"
         x:Class="MvvmApp.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
-        Height="300"
-        Width="400"
         d:DesignHeight="300"
         d:DesignWidth="400"
         Title="{Binding Title}"
+        Width="400"
+        Height="300"
         Icon="/Assets/logo.ico"
         mc:Ignorable="d">
+  <Window.Styles>
+    <Style Selector="Label">
+      <Setter Property="HorizontalAlignment" Value="Center" />
+    </Style>
+    <Style Selector="StackPanel">
+      <Setter Property="HorizontalAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Button">
+      <Setter Property="HorizontalAlignment" Value="Center" />
+    </Style>
+  </Window.Styles>
 
-  <StackPanel HorizontalAlignment="Center" Spacing="10">
+  <StackPanel Spacing="10">
     <Label Content="Generated NotifyField Property Test" />
-
     <Label Content="{Binding FullName}" />
+    <Label Content="{Binding CustomPropertyName}" />
 
-    <StackPanel HorizontalAlignment="Center"
-                Orientation="Horizontal"
-                Spacing="10">
+    <StackPanel Orientation="Horizontal" Spacing="10">
       <TextBox Text="{Binding FirstName}" />
       <TextBox Text="{Binding LastName}" />
     </StackPanel>
 
-    <Button HorizontalAlignment="Center"
-            Command="{Binding CmdPopulate}"
-            Content="Populate fields" />
+    <Button Command="{Binding CmdPopulate}" Content="Populate fields" />
   </StackPanel>
 </Window>

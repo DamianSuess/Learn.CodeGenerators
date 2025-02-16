@@ -6,28 +6,31 @@ namespace MvvmApp.ViewModels;
 public partial class MainWindowViewModel //: ViewModelBase
 {
   [NotifyField]
-  private string _firstName;
+  private string _firstName = string.Empty;
 
-  private string _fullName;
+  private string _fullName = string.Empty;
 
   ////[Notifies(nameof(FullName))]
   [NotifyField]
-  private string _lastName;
+  private string _lastName = string.Empty;
 
   [NotifyField]
-  private string _title;
+  private string _title = string.Empty;
+
+  [NotifyField(PropertyName = "CustomPropertyName")]
+  private string _somethingElse = "Custom Property Name";
 
   public MainWindowViewModel()
   {
-    Title = "Welcome to Prism.Avalonia!";
+    Title = "Welcome to Prism.Avalonia.Toolkit - Code Generator!";
   }
 
   public string FullName => $"{FirstName} {LastName}";
 
   public DelegateCommand CmdPopulate => new(() =>
   {
-    FirstName = "John-Jacob";
-    LastName = "Jingleheimerschmidt";
+    FirstName = "Incremental";
+    LastName = "GeneratorSample";
 
     RaisePropertyChanged(nameof(FullName));
   });

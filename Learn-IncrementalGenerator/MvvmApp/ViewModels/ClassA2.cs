@@ -1,14 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Prism.Mvvm;
+using System.ComponentModel;
 
 namespace MvvmApp.ViewModels;
 
-// Tests that two partial classes can double-inherit
-// But not different classes such as, ViewModelBase & BindableBase
-public partial class ClassA : BindableBase
+// Tests that two partial classes can double-inherit using an interface
+// But cannot inherit from two classes such as, ViewModelBase & BindableBase
+// even though ViewModelBase inherits from BindableBase.
+public partial class ClassA : INotifyPropertyChanged
 {
 }

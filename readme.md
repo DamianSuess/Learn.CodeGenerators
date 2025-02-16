@@ -6,23 +6,27 @@ There are two key types of .NET code generators available, **[Incremental Genera
 
 Since these methods have a lack of clear documentation, this article references various sources found on the internet.
 
-The examples provided use [Avalonia](https://avaloniaui.net/) and the [Prism.Avalonia](https://github.com/AvaloniaCommunity/Prism.Avalonia) library for a visual cross-platform MVVM experience.  Sure, a console app would quickly suffice; visuals are sometimes better.
+**Author:** [Damian Suess](https://www.linkedin.com/in/damiansuess/)<br/>
+**Website:** [SuessLabs.com](https://suesslabs.com)<br/>
+_Submitted with ❤ by Xeno Innovations, Inc. and Suess Labs._
 
 ### Forenote
 
-> When creating a code generator, be VERY mindful of your technique. Changes to your code will put pressure on the compiler and can have a negative impact on your developer (IDE) experience. The code samples here don't always use the best techniques.
+> When creating a code generator, be VERY mindful of your technique. Check out, [Avoiding Performance Pitfalls](https://andrewlock.net/creating-a-source-generator-part-9-avoiding-performance-pitfalls-in-incremental-generators/) by Andrew Lock.
+>
+> Changes to your code will put pressure on the compiler and can have a negative impact on your developer (IDE) experience. The code samples here don't always use the best techniques.
+
+The examples provided use [Avalonia](https://avaloniaui.net/) and the [Prism.Avalonia](https://github.com/AvaloniaCommunity/Prism.Avalonia) library for a visual cross-platform MVVM experience.  Sure, a console app would quickly suffice; visuals are sometimes better.
 
 ## Examples
 
-### Incremental Generator Example
+_The examples provided are crude with the intention to quickly point out how to implement._
 
-_Currently under construction_
+Both Incremental and Source Generator projects perform the same actions. "Incremental" is recommended for .NET 6 and above.
 
-### Source Generator Example
+### Attribute and Property Generator
 
-Basic example for generating properties based on the attribute `NotifyField` used by an MVVM application.
-
-This project relies on techniques used by the [Prism.Avalonia](https://github.com/AvaloniaCommunity/Prism.Avalonia).
+Basic example for generating properties based on the attribute `NotifyField` used by an MVVM application (_similar to CommunityToolkit's Observable attribute_).
 
 ```cs
 public partial class MainWindowViewModel
@@ -35,6 +39,26 @@ public partial class MainWindowViewModel
 
   // ...
 }
+```
+
+This will generate 2 files, `{CLASSNAME}_notifyable.g.cs` and `NotifyFieldAttribute.g.cs`.
+
+```cs
+  // Sample contents of: MainWindowViewModel_notifyable.g.cs
+
+  public partial class MainWindowViewModel : Prism.Mvvm.BindableBase
+  {
+    public string FirstName
+    {
+      get => this._firstName;
+      set
+      {
+          SetProperty(ref this._firstName, value);
+          //this._firstName = value;
+          // this.PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(nameof(FirstName)));
+      }
+    }
+...
 ```
 
 How to create custom attributes and code generators
@@ -56,5 +80,6 @@ Referencing your code gen project can be done in one of two ways
 ### References
 
 * [Source Generators Samples](https://github.com/dotnet/roslyn-sdk/blob/main/samples/CSharp/SourceGenerators/SourceGeneratorSamples/AutoNotifyGenerator.cs#L50)
+* [Video - Using Source Generators](https://www.youtube.com/watch?v=4DVV7FXukC8&list=PLdo4fOcmZ0oVFtp9MDEBNbA2sSqYvXSXO&index=78&t=71s)
 * [Incremental Generator](https://andrewlock.net/creating-a-source-generator-part-9-avoiding-performance-pitfalls-in-incremental-generators/)
 * Sections of this is based on CommunityToolkit.Mvvm `ObservableProperty`.
