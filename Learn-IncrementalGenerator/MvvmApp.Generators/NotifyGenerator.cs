@@ -1,3 +1,6 @@
+/*
+// This file aims to optimize the previous generator
+
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -39,7 +42,7 @@ public class NotifyGenerator : IIncrementalGenerator
         predicate: static (node, _) => node is FieldDeclarationSyntax f && f.AttributeLists.Count > 0,
         transform: static (ctx, _) => GetPropertiesToGenerate(ctx.SemanticModel, ctx.TargetNode))
       .Where(static m => m is not null);
-    */
+    *-/
 
     // Generate the source code
     context.RegisterSourceOutput(propsToGenerate, static (spc, source)
@@ -59,7 +62,7 @@ public class NotifyGenerator : IIncrementalGenerator
       if (result is not null)
         context.AddSource($"PropertyExtension.{value.Name}.g.cs", SourceText.From(result, Encoding.UTF8));
     }
-    */
+    *-/
   }
 
   private static PropertiesToGenerate? GetPropertiesToGenerate(SemanticModel semanticModel, SyntaxNode targetNode)
@@ -83,7 +86,7 @@ public class NotifyGenerator : IIncrementalGenerator
       if (attr.AttributeClass.ToDisplayString() == SourceHelper.NotifyFieldAttributeFullNamespace)
         fields.Add(fieldSymbol);
     }
-    */
+    *-/
 
     return null;
   }
@@ -116,3 +119,4 @@ public class NotifyGenerator : IIncrementalGenerator
     }
   }
 }
+*/

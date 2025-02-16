@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -24,7 +23,6 @@ public class NotifyFieldGenerator : IIncrementalGenerator
     context.RegisterPostInitializationOutput(ctx => ctx.AddSource(
       $"{SourceHelper.NotifyFieldAttribute}.g.cs",
       SourceText.From(SourceHelper.NotifyFieldAttributeClass, Encoding.UTF8)));
-    ////SourceHelper.NotifyFieldAttributeClass));
 
     var fieldsProvider = context.SyntaxProvider
       .CreateSyntaxProvider(

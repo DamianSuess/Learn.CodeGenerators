@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
-using static MvvmApp.Generators.NotifyGenerator;
 
 namespace MvvmApp.Generators;
 
@@ -91,11 +90,10 @@ namespace {srcNamespace}
       return;
     }
 
-    // Since we're using Prism library
-    source.Append($@"
-    public {fieldType} {propertyName} {{ get => this.{fieldName}; set => SetProperty(ref this.{fieldName}, value); }}
-");
+    // Generate property using the Prism library
+    source.AppendLine($@"public {fieldType} {propertyName} {{ get => this.{fieldName}; set => SetProperty(ref this.{fieldName}, value); }}");
 
+    // Non-prism notification
     /*
     source.Append($@"
     public {fieldType} {propertyName}
@@ -103,16 +101,15 @@ namespace {srcNamespace}
       get => this.{fieldName};
       set
       {{
-          SetProperty(ref this.{fieldName}, value);
-          ////this.{fieldName} = value;
-          ////this.PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(nameof({propertyName})));
+          this.{fieldName} = value;
+          this.PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(nameof({propertyName})));
       }}
     }}
 ");
      */
 
     // Extract the new Property's name from the field
-    string ExtractName(string fieldName, TypedConstant optionalNameOverride)
+    static string ExtractName(string fieldName, TypedConstant optionalNameOverride)
     {
       const char Underscore = '_';
 
@@ -127,8 +124,7 @@ namespace {srcNamespace}
       if (fieldName.Length == 1)
         return fieldName.ToUpper();
 
-      //// return fieldName.Substring(0, 1).ToUpper() + fieldName.Substring(1);
-      return string.Concat(fieldName[..1].ToUpper(), fieldName.AsSpan(1));
+      return fieldName.Substring(0, 1).ToUpper() + fieldName.Substring(1);
     }
   }
 }
