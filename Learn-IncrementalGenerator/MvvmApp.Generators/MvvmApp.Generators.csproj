@@ -2,12 +2,17 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
+
+    <!-- Disabled so you can see all usings -->
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
 
+    <!-- Dont reference source generator DLL directly in other projects -->
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    
     <!-- Enforces the use of IncrementalGenerator versus ISourceGenerator -->
-    <!--<EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>-->
+    <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,5 +21,11 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.12.0" />
+  </ItemGroup>
+
+  <!-- Ensures library is packaged as a source generator when using `dotnet pack` -->
+  <ItemGroup>
+    <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true"
+          PackagePath="analyzers/dotnet/cs" Visible="false" />
   </ItemGroup>
 </Project>

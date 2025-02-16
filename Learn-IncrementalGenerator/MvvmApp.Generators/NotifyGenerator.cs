@@ -4,22 +4,27 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Text;
 
 namespace MvvmApp.Generators;
 
-/// <summary>Sample property Prism.Mvvm.BindableBase property generator.</summary>
+/// <summary>Notify property generator Prism.Mvvm.BindableBase property generator.</summary>
 /// <remarks>
 ///   References:
-///   - https://andrewlock.net/creating-a-source-generator-part-9-avoiding-performance-pitfalls-in-incremental-generators/
 ///   - https://themisir.com/c-sharp-codegen/
 /// </remarks>
 [Generator(LanguageNames.CSharp)]
-public class NotifyIncrementalGenerator : IIncrementalGenerator
+public class NotifyGenerator : IIncrementalGenerator
 {
   public void Initialize(IncrementalGeneratorInitializationContext context)
   {
     // Register attribute source
-    //context.RegisterPostInitializationOutput(ctx =>
-    //  ctx.AddSource("FileName.g.cs", SourceText.From(NotifyFieldAttributeClass, Encoding.UTF8)));
+    context.RegisterPostInitializationOutput(ctx =>
+      ctx.AddSource(
+        "FileName.g.cs",
+        SourceText.From(SourceHelper.NotifyFieldAttributeClass, Encoding.UTF8)));
+
+    // Filter for properties
+    // ...
   }
 }

@@ -1,3 +1,4 @@
+/*
 using System;
 
 namespace Prism.Avalonia.Toolkit;
@@ -14,3 +15,4 @@ public sealed class NotifiableAttribute : Attribute
 
   public string? PropertyName { get; set; }
 }
+*/
